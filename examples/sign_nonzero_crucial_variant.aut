@@ -1,0 +1,28 @@
+# Example analyzed by hand (round-robin iteration) with the sign domain.
+# Variant with assignments instead of guards from the initial location.
+
+Sign_Nonzero_Variant
+{
+    var x;
+
+    initial q_0;
+    final q_bad;
+
+    from q_0
+    | x :=  2 --> q_1;
+    | x := -3 --> q_3;
+
+    from q_1
+    | x < 10 --> q_2;
+    | x >= 10 --> q_4;
+
+    from q_2
+    | x := x+1 --> q_1;
+
+    from q_3
+    | x := x-1 --> q_3;
+    | x <= 10 --> q_4;
+
+    from q_4
+    | x == 0 --> q_bad;
+}

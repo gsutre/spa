@@ -1,0 +1,21 @@
+# Example for which a backward analysis works better.
+
+Pre_Only
+{
+    var x, y, z;
+
+    initial q_0;
+    final q_bad;
+
+    from q_0
+    | x * y >= 0 --> q_1;
+
+    from q_1
+    | z := y --> q_2;
+
+    from q_2
+    | x < 0 --> q_3;
+
+    from q_3
+    | z >= 3 --> q_bad;
+}

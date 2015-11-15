@@ -1,0 +1,23 @@
+# Example that produces an infinite descending iteration
+# with intervals when narrowing is disabled
+
+Infinite_Descent
+{
+    var x;
+
+    initial q_0;
+    final r;
+
+    from q_0
+    | skip --> q_2;
+    | x := 0 --> q_1;
+
+    from q_2
+    | x := 1 --> q_1;
+
+    from q_1
+    | x == 3 --> r;
+
+    from r
+    | x := x+1 --> r;
+}

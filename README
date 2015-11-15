@@ -1,0 +1,46 @@
+Spa (simple program analyzer) is a simple (and naive) static analysis tool.  It
+has been developed to support a course on abstract interpretation.  The focus is
+on simplicity and modularity, at the expense of efficiency.
+
+
+Build requirements
+--------------------------------------------------------------------------------
+
+- OCaml 4.01 or later           http://caml.inria.fr/ocaml/
+- Menhir                        http://gallium.inria.fr/~fpottier/menhir/
+- GNU make                      http://www.gnu.org/software/make/
+
+
+Build instructions
+--------------------------------------------------------------------------------
+
+Simply run `make' to build the tool.  This generates a byte-code executable with
+debugging information (spa.d.byte).  You may also build a faster native-code
+executable (with assertions and bound checking disabled) with `make spa.native'.
+
+The makefile has two additional useful targets.  The `doc' target generates the
+documentation.  The `test' target builds an executable that performs unit tests
+(runtests.d.byte) and then runs it.
+
+
+Input format
+--------------------------------------------------------------------------------
+
+The tool analyzes automata-based programs (also called program automata).  These
+are finite-state automata equipped with integer variables, and whose transitions
+are labeled by commands.
+
+Commands are either assignments (e.g., x := y+z), or guards (e.g., x < 3*y), or
+the no-op instruction skip.
+
+Some examples are available in the examples sub-directory.
+
+
+Tool invocation
+--------------------------------------------------------------------------------
+
+The tool reads the input program automaton from the standard input or from the
+specified input file (if any).  Then, it performs either a forward analysis from
+the initial location, or a backward analysis from the final location.
+
+The `-help' option displays the available options.

@@ -1,0 +1,22 @@
+# Example analyzed by hand (round-robin iteration) with the constant domain.
+
+Constant_Propagation
+{
+    var x, y, z;
+
+    initial q_1;
+    final q_5;
+
+    from q_1
+    | x := 1 --> q_2;
+    | x := 2 --> q_3;
+
+    from q_2
+    | y := 2 --> q_4;
+
+    from q_3
+    | y := 1 --> q_4;
+
+    from q_4
+    | z := x+y --> q_5;
+}

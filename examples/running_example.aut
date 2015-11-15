@@ -1,0 +1,35 @@
+# Running example for the course.
+
+Running_Example
+{
+    var x, y;
+
+    initial q_01;
+    final q_13;
+
+    from q_01
+    | x := 1 --> q_02;
+
+    from q_02
+    | y <= 10 --> q_03;
+    | y > 10 --> q_06;
+
+    from q_03
+    | y := 10 --> q_11;
+
+    from q_06
+    | x < y --> q_07;
+    | x >= y --> q_11;
+
+    from q_07
+    | x := 2*x --> q_08;
+
+    from q_08
+    | y := y-1 --> q_06;
+
+    from q_11
+    | x := y+1 --> q_12;
+
+    from q_12
+    | x <= 0 --> q_13;
+}

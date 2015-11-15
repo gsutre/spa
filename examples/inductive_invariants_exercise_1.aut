@@ -1,0 +1,18 @@
+# Program automaton from the assignment on inductive invariants.
+# Exercise 1.
+
+Exercise_1
+{
+    var x, y;
+
+    initial q_0;
+    final q_bad;
+
+    from q_0
+    | x := 0 --> q_1;
+
+    from q_1
+    | x := x * y --> q_1;
+    | x := x + 3 --> q_1;
+    | x == 10 --> q_bad;
+}
