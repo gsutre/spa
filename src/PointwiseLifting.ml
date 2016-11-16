@@ -1,4 +1,4 @@
-(* $Id: PointwiseLifting.ml 3369 2015-11-13 13:06:25Z sutre $ *)
+(* $Id: PointwiseLifting.ml 4064 2016-11-10 12:01:48Z sutre $ *)
 
 
 (*
@@ -11,24 +11,30 @@ struct
   module VarMap = Map.Make (Variable)
 
   (*
-   * An abstract element is a pair (m, d) where:
+   * Abstract elements are total functions from the set of variables to the set
+   * of abstract numerical values.  These functions are partially ordered by the
+   * componentwise extension of the partial order on abstract numerical values.
+   *
+   * Abstract elements are also called abstract contexts.  The concretization of
+   * an abstract context a is the set of concrete environments ρ such that
+   * ρ(v) ∈ γ(a(v)) for every variable v, where γ denotes the concretization
+   * function of the numerical non-relational abstract domain N.
+   *
+   * Note: The underlying Galois connection is not a Galois insertion in general
+   * since several abstract contexts may have an empty concretization.
+   *
+   * It is easily seen that all abstract contexts obtained by lattice operations
+   * and abstract semantics operators are functions that differ from a constant
+   * only for finitely many variables.  So this module encodes abstract contexts
+   * by pairs (m, d) where:
    *
    * - m is a finite association table from variables to abstract numerical
    *   values, and
    * - d is a default abstract numerical value (for variables that are not
    *   mapped in m).
    *
-   * Abstract elements are called abstract contexts.  The concretization of an
-   * abstract context (m, d) is the set of concrete environments ρ such that
-   *
-   * - ρ(v) ∈ γ(m(v)) for all variables v in the domain of m, and
-   * - ρ(v) ∈ γ(d) otherwise.
-   *
-   * where γ denotes the concretization function of the numerical non-relational
-   * abstract domain N.
-   *
-   * Note: The underlying Galois connection is not a Galois insertion, since
-   * there may exist variables v such that m(v) = d.
+   * The corresponding abstract context is the function a defined by a(v) = m(v)
+   * if v is in the domain of m, and a(v) = d otherwise.
    *)
   type t = (N.t VarMap.t) * N.t
 
@@ -206,6 +212,9 @@ struct
    * environment ρ ∈ γ(a) and an integer z ∈ γ(y) such that ρ ⊧ e ⋈ z, where ⋈
    * is = or ≤ depending on solver.  The latter is either N.Op.equality or
    * N.Op.inequality.
+   *
+   * Note: The y argument slightly complicates this function and is useless for
+   * post_guard.  But it is useful for pre_assign.
    *)
   let feasible e solver y a =
     if empty a then false
@@ -216,7 +225,7 @@ struct
         false
       else
         (* Conservatively test whether x ⋈ y. *)
-        N.leq N.top (solver (N.abs 0) (N.Op.sub x y) N.top)
+        not (N.empty (solver (N.abs 0) (N.Op.sub x y) N.top))
 
   (*
    * Helper function for post_guard and pre_assign.
@@ -232,11 +241,14 @@ struct
    * α(S), obtained as follows:
    *
    * - Compute the linearization (r, s) of e with respect to a and v,
-   * - Solve the equality or inequality r*v + (s-y) ⋈ 0 subject to v ⊑ a(v)
+   * - Solve the equality or inequality r*v + (s-y) ⋈ 0 subject to v ⊑ a(v),
    *   using solver.
    *
    * The resulting abstract numerical value is guaranteed to be greater than or
    * equal to α(S).
+   *
+   * Note: The y argument slightly complicates this function and is useless for
+   * post_guard.  But it is useful for pre_assign.
    *)
   let refine e solver y a v =
     if leq a bot then bot

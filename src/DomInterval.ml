@@ -1,4 +1,4 @@
-(* $Id: DomInterval.ml 3379 2015-11-15 16:05:22Z sutre $ *)
+(* $Id: DomInterval.ml 4076 2016-11-10 14:57:03Z sutre $ *)
 
 
 (*
@@ -7,6 +7,15 @@
 
 
 open Eint
+
+(*
+ * Warning: The module Eint redefines many arithmetic comparators and operators.
+ * These functions now only accept values of type eint.  So, for instance, the
+ * expression 4 + 7 is not well-typed anymore, as (+) expects arguments of type
+ * eint.  In case they are needed (they shouldn't be), the original arithmetic
+ * comparators and operators can be recovered by prefixing them with Pervasives,
+ * for instance: Pervasives.(+) 4 7.
+ *)
 
 type t =
   | Bot                (* empty interval *)
@@ -184,6 +193,7 @@ struct
       lub sol_a_neg sol_a_pos
 
   let inequality a b c =
+    assert ((legal a) && (legal b) && (legal c)) ;
     let b' = add b (Int (Integer 0, Pos_infty))
     in
     equality a b' c
